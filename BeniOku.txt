@@ -1,0 +1,11 @@
+Bu otomasyon mysql ile yapıldığından wampserveri kurup
+http://localhost:8080/phpmyadmin/ adresinden yeni bir veritabanı
+adı javaodev olacak şekilde oluşturup içe aktarı tıklayıp ekte verilen sql
+sorgusunu ekleyip çalıştırmalısınız.
+
+Not:Tabloda güncelleme yaparken seçtiğiniz ve içeriğini değiştirdiğiniz
+hücreden çıktıktan sonra güncelle butonuna basarak güncelleme yapınız.
+
+
+
+
