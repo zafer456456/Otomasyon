@@ -20,29 +20,12 @@ import javax.swing.table.DefaultTableModel;
  * @author Zafer
  */
 public class Icerik extends javax.swing.JFrame {
-String kulad="root";
-String parola="";
-String db_name="javaodev";
-String host="localhost";
-int port=3306;
-Connection con=null;
-PreparedStatement prstatement=null;
-ResultSet rs;
 
+ResultSet rs;
+VeriTabaniIslemleri oto;
     public Icerik() {
         initComponents();
-        String url="jdbc:mysql://"+host+":"+port+"/"+db_name+"?characterEncoding=utf8";
-    try {
-         Class.forName("com.mysql.jdbc.Driver"); 
-          con=DriverManager.getConnection(url, kulad, parola); 
-          System.out.println("Bağlantı başarılı");
-        } catch (ClassNotFoundException e) { 
-     
-            System.out.println("Driver bulunamadı");
-        } catch (SQLException ex) {  
-          
-            System.out.println("Bağlantı başarısız");
-        } 
+        oto=new VeriTabaniIslemleri();//yapılandırıcı fonksiyon veri tabanı bağlantısını kuracak
     tablodoldur();
     }
 
@@ -236,7 +219,7 @@ ResultSet rs;
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Guncellebt)
                     .addComponent(SilBt))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -244,8 +227,9 @@ ResultSet rs;
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(25, 25, 25)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(30, 30, 30)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -254,27 +238,25 @@ ResultSet rs;
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(55, 55, 55)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(44, 44, 44))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-        public  void tablodoldur()
+        private  void tablodoldur()
         {
             int sonsatir=0;
             int satirlar=0;
             String sorgu="Select * from kullanici";
     try {
-       prstatement=con.prepareStatement(sorgu);
-        rs=prstatement.executeQuery(sorgu);
+       rs=oto.Cekme(sorgu);
         if (rs.next()) {
             rs.last();
             sonsatir=rs.getRow();
@@ -294,57 +276,56 @@ ResultSet rs;
         tablo.setModel(tablomodeli);
     } catch (SQLException ex) {
         Logger.getLogger(Icerik.class.getName()).log(Level.SEVERE, null, ex);
-    }
-      
-         
+    }         
         }
     private void EkllebtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EkllebtActionPerformed
-       String sorgu="Insert into kullanici(KullaniciAdi,KullaniciSifre) values(?,?)";
-    try {
-        prstatement=con.prepareStatement(sorgu);
-        prstatement.setString(1,EklenecekKad.getText().trim());
-        prstatement.setString(2,EklenecekKsifre.getText().trim());
-        prstatement.executeUpdate();
-        tablodoldur();
-    } catch (SQLException ex) {
-        Logger.getLogger(Icerik.class.getName()).log(Level.SEVERE, null, ex);
-    }
+        if (oto.Kullaniciekle(EklenecekKad.getText(), EklenecekKsifre.getText())) {
+           JOptionPane.showMessageDialog(null,"Kullanici Başırıyla Eklendi");
+           tablodoldur();
+           EklenecekKad.setText(null);
+           EklenecekKsifre.setText(null);
+           GuncelleSilad.setText(null);
+           GuncelleSiltb.setText(null);
+           return;
+        }
+       JOptionPane.showMessageDialog(null,"Ekleme İşlemi Bşarısız");
        
     }//GEN-LAST:event_EkllebtActionPerformed
 
     private void GuncellebtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuncellebtActionPerformed
         // TODO add your handling code here:
-           String id=tablo.getValueAt(tablo.getSelectedRow(), 0).toString();   
-        String sorgu="Update kullanici set KullaniciAdi=?,KullaniciSifre=? where KullaniciID=?";
-    try {
-        prstatement=con.prepareStatement(sorgu);
-        prstatement.setString(3,id);
-        prstatement.setString(1,GuncelleSilad.getText());
-        prstatement.setString(2,GuncelleSiltb.getText());
-        prstatement.executeUpdate();
-        tablodoldur();
-         JOptionPane.showMessageDialog(this,"Başarıyla güncellendi");
-    } catch (SQLException ex) {
-    }
+          String id=tablo.getValueAt(tablo.getSelectedRow(), 0).toString();   
+         if (oto.KullaniciGuncelle(GuncelleSilad.getText(),GuncelleSiltb.getText(),id)) {
+                  JOptionPane.showMessageDialog(null,"Kullanici Başırıyla Güncellendi");
+                  tablodoldur();
+                  EklenecekKad.setText(null);
+                  EklenecekKsifre.setText(null);
+                  GuncelleSilad.setText(null);
+                  GuncelleSiltb.setText(null);
+                  return;
+        }
+              JOptionPane.showMessageDialog(null,"Guncelleme İşlemi Başarısız");  
+              
     }//GEN-LAST:event_GuncellebtActionPerformed
 
     private void SilBtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SilBtActionPerformed
         // TODO add your handling code here:
-         String sorgu="Delete From kullanici where KullaniciID=?";
      String id=tablo.getValueAt(tablo.getSelectedRow(), 0).toString();   
-    
-    try {
-        if (id.equals(null)) {
-                JOptionPane.showMessageDialog(this,"Tablodan silmek istediğiniz kişiyi seçiniz");
-  return;
+     if (id.equals(null)) {
+        JOptionPane.showMessageDialog(this,"Tablodan silmek istediğiniz kişiyi seçiniz");
+        return;
         }
-        prstatement=con.prepareStatement(sorgu);
-        prstatement.setString(1, id);
-        prstatement.executeUpdate();
-        JOptionPane.showMessageDialog(this,"Başarıyla silindi");
-        tablodoldur();
-    } catch (SQLException ex) {
-    }
+        if (oto.KullaniciSilme(id)) {
+           tablodoldur();
+           JOptionPane.showMessageDialog(this,"Başarıyla silindi");
+           EklenecekKad.setText(null);
+           EklenecekKsifre.setText(null);
+           GuncelleSilad.setText(null);
+           GuncelleSiltb.setText(null);
+           return;
+        }
+    JOptionPane.showMessageDialog(null,"Silme İşlemi Başarısız");    
+       
     }//GEN-LAST:event_SilBtActionPerformed
 
     private void tabloMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabloMouseClicked

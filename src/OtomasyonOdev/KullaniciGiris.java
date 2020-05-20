@@ -14,34 +14,16 @@ import java.sql.SQLException;
  *
  * @author Zafer
  */
-public class KullaniciAdi extends javax.swing.JFrame {
+public class KullaniciGiris extends javax.swing.JFrame {
 
-    String kulad = "root";
-    String parola = "";
-    String db_name = "javaodev";
-    String host = "localhost";
-    int port = 3306;
-    Connection con = null;
-    PreparedStatement prstatement = null; //SQL sorgularını çalıştırmak için statement clasına ihtiyaç vardır
     ResultSet rs;
-
+    VeriTabaniIslemleri oto;
     /**
      * Creates new form KayitEkle
      */
-    public KullaniciAdi() {
+    public KullaniciGiris() {
         initComponents();
-        String url = "jdbc:mysql://" + host + ":" + port + "/" + db_name + "?characterEncoding=utf8";
-        try {
-            Class.forName("com.mysql.jdbc.Driver"); //mysql driver ı çalıştırılır
-            con = DriverManager.getConnection(url, kulad, parola); //sqlexception a düşmezse bağlantı başarılı
-            System.out.println("Bağlantı başarılı");
-        } catch (ClassNotFoundException e) {
-            //driver ı bulamazsa hata mesajı verir
-            System.out.println("Driver bulunamadı");
-        } catch (SQLException ex) {
-            //Veritabanına bağlanamazsa hata yakala
-            System.out.println("Bağlantı başarısız");
-        }
+        oto=new VeriTabaniIslemleri();
     }
 
     /**
@@ -121,9 +103,8 @@ public class KullaniciAdi extends javax.swing.JFrame {
     private void GirisBtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GirisBtActionPerformed
         String sorgu = "Select KullaniciSifre as sifre from kullanici where KullaniciAdi=?";
         try {
-            prstatement = con.prepareStatement(sorgu);
-            prstatement.setString(1, KadTF.getText().trim());
-            rs = prstatement.executeQuery();
+           rs=oto.Cekme(sorgu,KadTF.getText());
+           
             if (rs.getRow()==0) {
                 
             jLabel3.setText("Kullanıcı adi yanlış");
@@ -164,20 +145,22 @@ public class KullaniciAdi extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(KullaniciAdi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KullaniciGiris.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(KullaniciAdi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KullaniciGiris.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(KullaniciAdi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KullaniciGiris.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(KullaniciAdi.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(KullaniciGiris.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new KullaniciAdi().setVisible(true);
+            new KullaniciGiris().setVisible(true);
         });
     }
 
